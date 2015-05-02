@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<style>
+      table, th , td {
+      border-collapse: collapse;
+      padding: 5px;
+        text-align:center;
+        font-size:12px;
+        font-family: Arial;
+        color: lightslategrey;
+
+
+    }
+
+    th {
+        background:#abcdef;
+
+      }
+.btn {
+  -webkit-border-radius: 26;
+  -moz-border-radius: 26;
+  border-radius: 26px;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 12px;
+  background: #b5b5b5;
+  padding: 3px 4px 4px 3px;
+  border: solid #ffffff 1px;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background: #3cb0fd;
+  background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+  background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+  background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+  background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+  background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+  text-decoration: none;
+}
+</style>
+<body>
+
+<h2>Tags</h2>
+
+<p id="demo"></p>
+
+<table id = "myTable" class="myTable">
+    <tr>
+        <th width="10%">Tag</th>
+        <th width="30%">Freq</th>
+    </tr>
+</table>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+<script>
+//Unique values
+ Array.prototype.unique =
+          function() {
+            var a = [];
+            var l = this.length;
+            for(var i=0; i<l; i++) {
+              for(var j=i+1; j<l; j++) {
+                // If this[i] is found later in the array
+                if (this[i] === this[j])
+                  j = ++i;
+              }
+              a.push(this[i]);
+            }
+            return a;
+          };
+
+//Count word frequency
+function freqCount(arr) {
+          var a = [], b = [], prev;
+          arr.sort();
+          for ( var i = 0; i < arr.length; i++ ) {
+              if ( arr[i] !== prev ) {
+                  a.push(arr[i]);
+                  b.push(1);
+              } else {
+                  b[b.length-1]++;
+              }
+              prev = arr[i];
+          }
+          var word = a;
+          var freq = b;
+          var output = [word,freq]
+          return output;
+      }
+
+//Array Remove by val
+Array.prototype.remove = function() {
+    var what, a = arguments, L = a.length, ax;
+    while (L && this.length) {
+        what = a[--L];
+        while ((ax = this.indexOf(what)) !== -1) {
+            this.splice(ax, 1);
+        }
+    }
+    return this;
+};
+//Table generate
+        function tablegenerate(word,freq) {
+
+            for(i=0; i<word.length;i++){
+                 var $formrow = '<tr><td class="btn">'+word[i]+'</td><td>'+freq[i]+'</td></tr>';
+                $('.myTable').append($formrow);
+            }
+        }
+
+//https://farm8.staticflickr.com/7668/17153934519_f4a4a4d7e7_b.jpg
+//https://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=b2fbcde54379c607e0516aff52dd3839&photo_id=17153934519&format=rest&auth_token=72157651852664627-716c795937dc4367&api_sig=992d68a220601e20c8a9ec2717075ac4
+//"https://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=b2fbcde54379c607e0516aff52dd3839&photo_id=17153934519&format=json&nojsoncallback=1&api_sig=fb8c649ef5d395500020a389a443d557"
+var url = [
+"https://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=a59cbccd1f44d2c3cf5d5c66416ee8c3&photo_id=16720551934&format=json&nojsoncallback=1",
+"https://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=a59cbccd1f44d2c3cf5d5c66416ee8c3&photo_id=17042984570&format=json&nojsoncallback=1"];
+
+//Master Array  
+var masterlist = new Array();
+var word = new Array();
+var freq = new Array();
+
+ console.log(masterlist);
+
+for(j=0;j<url.length;j++){
+$.ajax({
+    url: url[j],
+    dataType: 'json',
+    success: function(results){
+        var title = results.photo.title._content;
+        var title2 = results.photo.description._content;
+        var consol = title + " " +title2;
+        var arr = consol.toLowerCase().split(" ");
+        console.log(arr);
+
+        masterlist.push.apply(masterlist, arr);
+        masterlist.remove('');
+
+
+        for(var z=0; z < masterlist.length; z++) {
+         masterlist[z] = masterlist[z].replace(/[\.,-\/#!$%\~^&\*&;:{}=\-_`~()]/g,"");
+         masterlist[z] = masterlist[z].replace(/\d+/g,'');
+        masterlist[z] = masterlist[z].replace(/\./g,'');
+        masterlist[z] = masterlist[z].replace('-','');
+         masterlist[z] = masterlist[z].replace(' ','');
+         masterlist[z] = masterlist[z].replace(/[\n\r]+/g, '');
+         console.log(masterlist[z])
+         if(masterlist[z].length<=3){
+          masterlist.remove(masterlist[z]);
+
+        }
+        }
+
+        var result = freqCount(masterlist);
+        
+function  createSorter(propName) {
+    return function (a,b) {
+        // The following won't work for strings
+        // return a[propName] - b[propName];
+        var aVal = a[propName], bVal = b[propName] ;
+        return aVal > bVal ? 1 : (aVal < bVal ?  - 1 : 0);
+
+    };
+}
+result.sort(createSorter(0));
+
+
+
+        var word = result[0];
+        var freq = result[1];
+
+
+
+      $("#myTable tr").empty();
+        tablegenerate(word,freq);
+    }
+});
+ console.log(masterlist);
+
+}
+
+
+
+</script>
+
+</body>
+</html>
