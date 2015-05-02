@@ -7,10 +7,10 @@ Workflow
 
 - Loop through list of photo_ids
 - Ajax call to get photo info via API
-- parse words from <title> and <description>
+- parse words from title tag and description tag
 - build arrays of words, clean
 - count word frequencies 
-- clear <table> tag
+- clear table tag
 - refresh with word frequencies table 
 
 Issues
