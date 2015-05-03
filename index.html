@@ -113,9 +113,19 @@ Array.prototype.remove = function() {
 //https://farm8.staticflickr.com/7668/17153934519_f4a4a4d7e7_b.jpg
 //https://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=b2fbcde54379c607e0516aff52dd3839&photo_id=17153934519&format=rest&auth_token=72157651852664627-716c795937dc4367&api_sig=992d68a220601e20c8a9ec2717075ac4
 //"https://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=b2fbcde54379c607e0516aff52dd3839&photo_id=17153934519&format=json&nojsoncallback=1&api_sig=fb8c649ef5d395500020a389a443d557"
-var url = [
-"https://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=a59cbccd1f44d2c3cf5d5c66416ee8c3&photo_id=16720551934&format=json&nojsoncallback=1",
-"https://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=a59cbccd1f44d2c3cf5d5c66416ee8c3&photo_id=17042984570&format=json&nojsoncallback=1"];
+//var url = ["https://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=a59cbccd1f44d2c3cf5d5c66416ee8c3&photo_id=16720551934&format=json&nojsoncallback=1","https://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=a59cbccd1f44d2c3cf5d5c66416ee8c3&photo_id=17042984570&format=json&nojsoncallback=1"];
+
+var photo_ids = ["17139222677",  "17042984570","17140846927","17334582972", "17321926295","16702789703"] ;
+
+
+var front = ["https://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=a59cbccd1f44d2c3cf5d5c66416ee8c3&format=json&nojsoncallback=1&photo_id="]
+
+var url = []
+
+for(j = 0; j<photo_ids.length; j++){
+  url[j]=front + photo_ids[j];
+  console.log(url);
+}
 
 //Master Array  
 var masterlist = new Array();
@@ -125,6 +135,8 @@ var freq = new Array();
  console.log(masterlist);
 
 for(j=0;j<url.length;j++){
+
+
 $.ajax({
     url: url[j],
     dataType: 'json',
@@ -132,55 +144,55 @@ $.ajax({
         var title = results.photo.title._content;
         var title2 = results.photo.description._content;
         var consol = title + " " +title2;
-        var arr = consol.toLowerCase().split(" ");
-        console.log(arr);
+        var consol = consol.toLowerCase()
+                     .replace(/[\.,-\/#!$%\^&\*;:{"}=\-_`~()]/g," ")
+                     .replace(/[0-9]/g,"");
+
+       var arr = consol.split(" ");
+       console.log(arr);
 
         masterlist.push.apply(masterlist, arr);
-        masterlist.remove('');
+        masterlist.remove('').remove('this').remove('with').remove('about').remove('have').remove('just');
 
 
-        for(var z=0; z < masterlist.length; z++) {
-         masterlist[z] = masterlist[z].replace(/[\.,-\/#!$%\~^&\*&;:{}=\-_`~()]/g,"");
-         masterlist[z] = masterlist[z].replace(/\d+/g,'');
-        masterlist[z] = masterlist[z].replace(/\./g,'');
-        masterlist[z] = masterlist[z].replace('-','');
-         masterlist[z] = masterlist[z].replace(' ','');
-         masterlist[z] = masterlist[z].replace(/[\n\r]+/g, '');
-         console.log(masterlist[z])
-         if(masterlist[z].length<=3){
-          masterlist.remove(masterlist[z]);
+        for( z=0; z < masterlist.length; z++) {
 
-        }
-        }
+             if(masterlist[z].length<=3){
+              masterlist.remove(masterlist[z]);
+
+            }
+            }
 
         var result = freqCount(masterlist);
-        
-function  createSorter(propName) {
-    return function (a,b) {
-        // The following won't work for strings
-        // return a[propName] - b[propName];
-        var aVal = a[propName], bVal = b[propName] ;
-        return aVal > bVal ? 1 : (aVal < bVal ?  - 1 : 0);
 
-    };
-}
-result.sort(createSorter(0));
+        var arr = []; // Array
+          for(i = 0; i<=result[0].length; i++){
+            arr.push({word: result[0][i], freq: result[1][i] });
+          }
 
+        arr.sort(function(a, b) {
+            return b.freq - a.freq;
+          });
 
+         var words = [];
+         var freqs = [];
 
-        var word = result[0];
-        var freq = result[1];
-
+        for(i in arr){ 
+         
+          console.log(arr[i]['word']);
+          words.push(arr[i]['word']);
+          freqs.push(Math.round(100*arr[i]['freq']/photo_ids.length)+"%");
+          //freq.push(sorted[o].freq)
+        }
 
 
       $("#myTable tr").empty();
-        tablegenerate(word,freq);
+        tablegenerate(words,freqs);
     }
 });
- console.log(masterlist);
+// console.log(masterlist);
 
 }
-
 
 
 </script>
